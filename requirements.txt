@@ -24,7 +24,7 @@ h11
 h2
 hpack==4.0.0
 httpcore
-httpx
+httpx==0.27.2
 hugchat==0.3.10
 hyperframe==6.0.1
 idna
