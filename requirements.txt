@@ -6,7 +6,7 @@ bcrypt==4.1.2
 blinker==1.7.0
 Bottleneck
 cachetools==5.3.2
-certify
+certifi
 charset-normalizer==3.3.2
 click==8.1.7
 dash==2.14.2
