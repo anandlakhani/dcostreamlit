@@ -1,21 +1,20 @@
 import streamlit as st
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key="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")
 import time
 
 # Set up the header
 st.header("Measuring System-Wide Contribution Towards the SDGs")
 
 # Set your OpenAI API key
-openai.api_key = "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"
 
 # Check if the session state has the 'thread' key
 if "thread" not in st.session_state:
     # Create a new thread using OpenAI API (for chat purposes)
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
-        messages=[{"role": "system", "content": "You are a helpful assistant."}]
-    )
-    st.session_state.thread = response['id']
+    response = client.chat.completions.create(model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
+    messages=[{"role": "system", "content": "You are a helpful assistant."}])
+    st.session_state.thread = response.id
 
 # Initialize message history if it doesn't exist
 if "messages" not in st.session_state:
@@ -37,13 +36,11 @@ if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Call the OpenAI API to send the message and get a response
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
-        messages=st.session_state.messages
-    )
+    response = client.chat.completions.create(model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
+    messages=st.session_state.messages)
 
-    assistant_response = response['choices'][0]['message']['content']
-    
+    assistant_response = response.choices[0].message.content
+
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(assistant_response)
