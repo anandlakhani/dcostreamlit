@@ -2,17 +2,23 @@ import streamlit as st
 import openai
 import time
 
+# Set up the header
 st.header("Measuring System-Wide Contribution Towards the SDGs")
 
-api_key = "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"
-client = openai.OpenAI(api_key=api_key)
-assistant_id = "asst_EqzTmhPzlSEXg6BP66qsN16J"
+# Set your OpenAI API key
+openai.api_key = "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"
 
-if "thread" not in st.session_state.keys():
-    thread = client.beta.threads.create()
-    st.session_state.thread= thread.id
+# Check if the session state has the 'thread' key
+if "thread" not in st.session_state:
+    # Create a new thread using OpenAI API (for chat purposes)
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
+        messages=[{"role": "system", "content": "You are a helpful assistant."}]
+    )
+    st.session_state.thread = response['id']
 
-if "messages" not in st.session_state.keys():
+# Initialize message history if it doesn't exist
+if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Ask me a question about Systems-Wide reporting"}
     ]
@@ -27,35 +33,20 @@ if prompt := st.chat_input("What is up?"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
 
-    #Create a message
+    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
-    message = client.beta.threads.messages.create(
-        thread_id=st.session_state.thread,
-        role="user",
-        content=prompt,
+
+    # Call the OpenAI API to send the message and get a response
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
+        messages=st.session_state.messages
     )
 
-    #Create a run
-
-    run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread,
-        assistant_id=assistant_id,
-    )
-
-    while True:
-        time.sleep(1)
-        if client.beta.threads.runs.retrieve(thread_id=st.session_state.thread, run_id=run.id).status in ['completed', 'failed', 'requires_action']:
-            break
-    if client.beta.threads.runs.retrieve(thread_id=st.session_state.thread, run_id=run.id).status == 'failed':
-        print(run.error)
-
-    messages = client.beta.threads.messages.list(
-    thread_id=st.session_state.thread
-    )
-    response = messages.data[0].content[0].text.value
+    assistant_response = response['choices'][0]['message']['content']
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        st.markdown(response)
+        st.markdown(assistant_response)
+
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    st.session_state.messages.append({"role": "assistant", "content": assistant_response})
