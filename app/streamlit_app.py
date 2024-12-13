@@ -1,7 +1,9 @@
 import streamlit as st
+import os
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 import time
 
