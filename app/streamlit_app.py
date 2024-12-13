@@ -1,7 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
+
 import time
 
 # Set up the header
