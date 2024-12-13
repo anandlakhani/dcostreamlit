@@ -1,9 +1,10 @@
 import streamlit as st
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import os
 
 # Set OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Ensure the API key is set
 if not openai.api_key:
@@ -36,13 +37,11 @@ if prompt := st.chat_input("What is up?"):
 
     try:
         # Call the OpenAI API to get a response
-        response = openai.ChatCompletion.create(
-            model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
-            messages=st.session_state.messages
-        )
+        response = client.chat.completions.create(model="gpt-4",  # Ensure to use a suitable model, e.g., GPT-4 or GPT-3.5
+        messages=st.session_state.messages)
 
         # Extract assistant's response
-        assistant_response = response.choices[0].message["content"]
+        assistant_response = response.choices[0].message.content
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
